@@ -46,7 +46,7 @@ return {
     -- do not include in updates
     pin = true,
     build = [[npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out
-    && git update-index --assume-unchanged package-lock.json]],
+    git update-index --assume-unchanged package-lock.json]],
   },
   -- for easy configuration
   {
