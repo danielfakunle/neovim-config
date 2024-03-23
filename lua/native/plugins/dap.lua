@@ -1,144 +1,117 @@
 return {
-  -- dap client for neovim
-  {
-    "mfussenegger/nvim-dap",
-    config = function()
-      local dap = require("dap")
-      -- TODO: add debuggers here
-      dap.adapters.gdb = {
-        type = "executable",
-        command = "gdb",
-        args = { "-i", "dap" },
-      }
-      dap.configurations.cpp = {
-        {
-          name = 'Run executable (GDB)',
-          type = 'gdb',
-          request = 'launch',
-          -- This requires special handling of 'run_last', see
-          -- https://github.com/mfussenegger/nvim-dap/issues/1025#issuecomment-1695852355
-          program = function()
-            local path = vim.fn.input({
-              prompt = 'Path to executable: ',
-              default = vim.fn.getcwd() .. '/',
-              completion = 'file',
-            })
-
-            return (path and path ~= '') and path or dap.ABORT
-          end,
-        },
-        {
-          name = "Launch",
-          type = "gdb",
-          request = "launch",
-          program = function()
-            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-          end,
-          cwd = "${workspaceFolder}",
-          stopAtBeginningOfMainSubprogram = false,
-        },
-      }
-    end,
-  },
-  -- javascript(node) dap
-  {
-    "mxsdev/nvim-dap-vscode-js",
-    config = function()
-      require("dap-vscode-js").setup({
-        debugger_path = vim.fn.stdpath("data") .. "/lazy/vscode-js-debug",
-        adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
-      })
-      for _, language in ipairs({ "typescript", "javascript" }) do
-        require("dap").configurations[language] = {
-          {
-            type = "pwa-node",
-            request = "launch",
-            name = "Launch file",
-            program = "${file}",
-            cwd = "${workspaceFolder}",
-          },
-          {
-            type = "pwa-node",
-            request = "attach",
-            name = "Attach",
-            processId = require("dap.utils").pick_process,
-            cwd = "${workspaceFolder}",
-          },
-        }
-      end
-    end,
-  },
-  {
-    "microsoft/vscode-js-debug",
-    -- optional = true,
-    -- do not include in updates
-    pin = true,
-    build = [[npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out
-    git update-index --assume-unchanged package-lock.json]],
-  },
-  -- for easy configuration
-  {
-    "jay-babu/mason-nvim-dap.nvim",
-    opts = {
-      automatic_installation = true,
-    },
-  },
-  -- dap ui
-  {
-    "rcarriga/nvim-dap-ui",
-    dependencies = {
-      "nvim-neotest/nvim-nio",
-    },
-    config = function()
-      local dap, dapui = require("dap"), require("dapui")
-      require("dapui").setup({
-        layouts = {
-          {
-            elements = {
-              {
-                id = "scopes",
-                size = 0.25,
-              },
-              {
-                id = "breakpoints",
-                size = 0.25,
-              },
-              {
-                id = "stacks",
-                size = 0.25,
-              },
-              {
-                id = "watches",
-                size = 0.25,
-              },
-            },
-            position = "left",
-            size = 40,
-          },
-          {
-            elements = {
-              {
-                id = "repl",
-                size = 1,
-              },
-            },
-            position = "bottom",
-            size = 10,
-          },
-        },
-      })
-      dap.listeners.before.attach.dapui_config = function()
-        dapui.open()
-      end
-      dap.listeners.before.launch.dapui_config = function()
-        dapui.open()
-      end
-      -- dap.listeners.before.event_terminated.dapui_config = function()
-      -- 	dapui.close()
-      -- end
-      -- dap.listeners.before.event_exited.dapui_config = function()
-      --   dapui.close()
-      -- end
-    end,
-  },
+	-- dap client for neovim
+	{
+		"mfussenegger/nvim-dap",
+		keys = {
+			{
+				"<leader>db",
+				":DapToggleBreakpoint<cr>",
+				desc = "Add breakpoint at line",
+			},
+			{
+				"<leader>dr",
+				":DapContinue<cr>",
+				desc = "Start or continue the debugger",
+			},
+			{
+				"<leader>dt",
+				":DapTerminate<cr>",
+				desc = "Terminate debug session",
+			},
+			{
+				"<leader>dx",
+				function()
+					require("dapui").close()
+				end,
+				desc = "Close debug session",
+			},
+		},
+		config = function()
+			local dap = require("dap")
+			dap.adapters.cppdbg = {
+				id = "cppdbg",
+				type = "executable",
+				command = vim.fn.stdpath("data") .. "/mason/packages/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
+			}
+			dap.configurations.cpp = {
+				{
+					name = "Launch file now",
+					type = "cppdbg",
+					request = "launch",
+					miDebuggerPath = "/usr/bin/lldb",
+					program = function()
+						return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+					end,
+					cwd = "${workspaceFolder}",
+					stopAtEntry = true,
+					args = {},
+				},
+			}
+			dap.configurations.c = {
+				{
+					name = "Launch file now",
+					type = "cppdbg",
+					request = "launch",
+					miDebuggerPath = "/usr/bin/lldb",
+					program = function()
+						return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+					end,
+					cwd = "${workspaceFolder}",
+					stopAtEntry = true,
+					args = {},
+				},
+			}
+		end,
+	},
+	-- for easy configuration
+	{
+		"jay-babu/mason-nvim-dap.nvim",
+		event = "VeryLazy",
+		dependencies = {
+			"williamboman/mason.nvim",
+			"mfussenegger/nvim-dap",
+		},
+		opts = {
+			handlers = {},
+			automatic_installation = true,
+		},
+	},
+	-- javascript(node) dap
+	{
+		"mxsdev/nvim-dap-vscode-js",
+		main = "dap-vscode-js",
+		opts = {
+			debugger_path = vim.fn.stdpath("data") .. "/lazy/vscode-js-debug",
+			adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
+		},
+	},
+	-- install vscode-js debugger
+	{
+		"microsoft/vscode-js-debug",
+		build = [[npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out && git update-index --assume-unchanged package-lock.json]],
+	},
+	-- dap ui
+	{
+		"rcarriga/nvim-dap-ui",
+		event = "VeryLazy",
+		dependencies = {
+			"nvim-neotest/nvim-nio",
+		},
+		config = function()
+			local dap, dapui = require("dap"), require("dapui")
+			dapui.setup()
+			dap.listeners.before.attach.dapui_config = function()
+				dapui.open()
+			end
+			dap.listeners.before.launch.dapui_config = function()
+				dapui.open()
+			end
+			dap.listeners.before.event_terminated.dapui_config = function()
+				dapui.close()
+			end
+			dap.listeners.before.event_exited.dapui_config = function()
+				dapui.close()
+			end
+		end,
+	},
 }

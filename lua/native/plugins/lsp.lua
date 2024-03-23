@@ -4,33 +4,31 @@ return {
 	{
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = {
-			"WhoIsSethDaniel/mason-tool-installer.nvim",
+			{
+				"WhoIsSethDaniel/mason-tool-installer.nvim",
+				opts = {
+					ensure_installed = {
+						-- dap
+						"cpptools",
+						-- linters
+						"eslint_d",
+						-- formatters
+						"clang-format",
+						"prettier",
+						"stylua",
+					},
+				},
+			},
 		},
-		config = function()
-			local mason = require("mason")
-			local mason_tool_installer = require("mason-tool-installer")
-			mason.setup({
-				automatic_installation = true,
-				ensure_installed = {
-					-- lsp
-					"clangd",
-					"jsonls",
-					"lua_ls",
-				},
-			})
-			mason_tool_installer.setup({
-				ensure_installed = {
-					-- dap
-					"codelldb",
-					-- linters
-					"eslint_d",
-					-- formatters
-					"clang_format",
-					"prettier",
-					"stylua",
-				},
-			})
-		end,
+		opts = {
+			ensure_installed = {
+				-- lsp
+				"clangd",
+				"jsonls",
+				"lua_ls",
+			},
+			automatic_installation = true,
+		},
 	},
 	-- connect neovim to language servers
 	{
@@ -158,5 +156,8 @@ return {
 		end,
 	},
 	-- for plugin development
-	{ "folke/neodev.nvim", opts = { library = { plugins = { "nvim-dap-ui" }, types = true } } },
+	{
+		"folke/neodev.nvim",
+		config = true,
+	},
 }
