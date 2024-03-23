@@ -10,47 +10,45 @@ vim.keymap.set("n", "<leader>fh", ":Telescope help_tags<cr>", {})
 -- neo-tree
 vim.keymap.set("n", "<leader>e", ":Neotree filesystem reveal right toggle<cr>", {})
 
--- lspconfig
-vim.keymap.set("n", "K", vim.lsp.buf.hover, {}) -- show documentation for what is under cursor
-vim.keymap.set("n", "gd", vim.lsp.buf.definition, {})
-vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, {})
-
 -- formatting
 vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
 
 -- nvim dap
 vim.keymap.set("n", "<leader>db", function()
-  require("dap").toggle_breakpoint()
+	require("dap").toggle_breakpoint()
 end)
 vim.keymap.set("n", "<leader>dc", function()
-  require("dap").continue()
+	--if vim.fn.filereadable(".vscode/launch.json") then
+		--require("dap.ext.vscode").load_launchjs(nil, { gdb = { "c", "cpp" } })
+	--end
+	require("dap").continue()
 end)
 vim.keymap.set("n", "<leader>n", function()
-  require("dap").step_over()
+	require("dap").step_over()
 end)
 vim.keymap.set("n", "<leader>ds", function()
-  require("dap").step_into()
+	require("dap").step_into()
 end)
 vim.keymap.set("n", "<leader>do", function()
-  require("dap").step_out()
+	require("dap").step_out()
 end)
 vim.keymap.set("n", "<leader>dt", function()
-  require("dap").terminate()
+	require("dap").terminate()
 end)
 vim.keymap.set("n", "<leader>dx", function()
-  require("dapui").close()
+	require("dapui").close()
 end)
 vim.keymap.set("n", "<Leader>di", function()
-  require("dap").repl.open()
+	require("dap").repl.open()
 end)
 vim.keymap.set("n", "<Leader>lp", function()
-  require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
+	require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
 end)
 vim.keymap.set({ "n", "v" }, "<Leader>dh", function()
-  require("dap.ui.widgets").hover()
+	require("dap.ui.widgets").hover()
 end)
 vim.keymap.set({ "n", "v" }, "<Leader>dp", function()
-  require("dap.ui.widgets").preview()
+	require("dap.ui.widgets").preview()
 end)
 
 -- navigation

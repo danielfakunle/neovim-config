@@ -10,6 +10,34 @@ return {
         command = "gdb",
         args = { "-i", "dap" },
       }
+      dap.configurations.cpp = {
+        {
+          name = 'Run executable (GDB)',
+          type = 'gdb',
+          request = 'launch',
+          -- This requires special handling of 'run_last', see
+          -- https://github.com/mfussenegger/nvim-dap/issues/1025#issuecomment-1695852355
+          program = function()
+            local path = vim.fn.input({
+              prompt = 'Path to executable: ',
+              default = vim.fn.getcwd() .. '/',
+              completion = 'file',
+            })
+
+            return (path and path ~= '') and path or dap.ABORT
+          end,
+        },
+        {
+          name = "Launch",
+          type = "gdb",
+          request = "launch",
+          program = function()
+            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+          end,
+          cwd = "${workspaceFolder}",
+          stopAtBeginningOfMainSubprogram = false,
+        },
+      }
     end,
   },
   -- javascript(node) dap
