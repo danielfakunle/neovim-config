@@ -1,7 +1,7 @@
 if vim.g.vscode then
-	require("vscode")
+  require("code")
 else
-	-- ordinary Neovim
-	require("native.core")
-	require("native.lazy")
+  -- ordinary Neovim
+  -- bootstrap lazy.nvim, LazyVim and your plugins
+  require("config.lazy")
 end
